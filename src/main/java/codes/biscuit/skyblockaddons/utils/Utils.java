@@ -263,16 +263,13 @@ public class Utils {
      * @return {@code true} if the player is on Hypixel, {@code false} otherwise
      */
     public boolean isOnHypixel() {
-        EntityPlayerSP player = Minecraft.getMinecraft().thePlayer;
-        if (player == null) {
-            return false;
-        }
-        String brand = player.getClientBrand();
-        if (brand != null) {
-            for (Pattern p : main.getOnlineData().getHypixelBrands()) {
-                if (p.matcher(brand).matches()) {
-                    return true;
-                }
+        Minecraft mc = Minecraft.getMinecraft();
+        if (mc != null && mc.theWorld != null && !mc.isSingleplayer()) {
+            if (mc.thePlayer != null && mc.thePlayer.getClientBrand() != null && mc.thePlayer.getClientBrand().toLowerCase().contains("fun")) {
+                return true;
+            }
+            if (mc.getCurrentServerData().serverIP.toLowerCase().contains("fun")) {
+                return true;
             }
         }
         return false;
