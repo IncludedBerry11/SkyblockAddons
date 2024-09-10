@@ -24,22 +24,32 @@ public enum DiscordStatus implements ButtonSelect.SelectItem {
             () -> {
                 SkyblockAddons main = SkyblockAddons.getInstance();
 
-                Location location = main.getUtils().getLocation();
-                String prefix = main.getUtils().isOnRift() ? "\u0444 " : "\u23E3 ";
+                String location = main.getUtils().getLocation();
+                Island map = main.getUtils().getMap();
+                String prefix = main.getUtils().isOnRift() ? "ф " : "⏣ ";
 
-                switch (location) {
-                    // Don't display "Your Island."
-                    case ISLAND:
-                        return "\u23E3 Private Island";
-                    case THE_CATACOMBS:
-                    case KUUDRAS_HOLLOW:
-                        return prefix.concat(location.getScoreboardName())
-                                .concat(main.getUtils().getDungeonFloor());
-                    case GARDEN_PLOT:
-                        return prefix.concat(location.getScoreboardName())
-                                .concat(main.getUtils().getPlotName());
+                switch (map) {
+                    // Don't display "Your Island"
+                    case PRIVATE_ISLAND:
+                        if (main.getUtils().isGuest()) {
+                            return "Visiting " + location.trim();
+                        } else {
+                            return "⏣ Private Island";
+                        }
+                    case GARDEN:
+                        // If the title line ends with "GUEST", then the player is visiting someone else's island.
+                        if (main.getUtils().isGuest()) {
+                            return "Visiting The Garden";
+                        } else {
+                            String display = prefix + location;
+                            String plotName = main.getUtils().getPlotName();
+                            if (!plotName.isEmpty()) {
+                                display += " - " + plotName;
+                            }
+                            return display;
+                        }
                     default:
-                        return prefix.concat(location.getScoreboardName());
+                        return prefix + location;
                 }
             }),
 
@@ -121,16 +131,15 @@ public enum DiscordStatus implements ButtonSelect.SelectItem {
 
     AUTO_STATUS("discordStatus.titleAuto", "discordStatus.descriptionAuto", () -> {
                 SkyblockAddons main = SkyblockAddons.getInstance();
-                Location location = main.getUtils().getLocation();
-
-                if (location == Location.THE_END || location == Location.DRAGONS_NEST) {
-                    return DiscordStatus.ZEALOTS.displayMessageSupplier.get();
-                }
 
                 EnumUtils.SlayerQuest slayerQuest = main.getUtils().getSlayerQuest();
-                if (slayerQuest != null && LocationUtils.isSlayerLocation(slayerQuest, location)) {
+                if (slayerQuest != null && LocationUtils.isOnSlayerLocation(slayerQuest)) {
                     return (main.getUtils().isSlayerBossAlive() ? "Slaying a " : "Doing a ")
                             + slayerQuest.getScoreboardName() + " " + main.getUtils().getSlayerQuestLevel() + " boss.";
+                }
+
+                if (LocationUtils.isOnZealotSpawnLocation()) {
+                    return DiscordStatus.ZEALOTS.displayMessageSupplier.get();
                 }
 
                 if (main.getUtils().isOnRift()) {
