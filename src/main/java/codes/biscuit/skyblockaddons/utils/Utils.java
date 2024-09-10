@@ -292,10 +292,10 @@ public class Utils {
     public boolean isOnHypixel() {
         Minecraft mc = Minecraft.getMinecraft();
         if (mc != null && mc.theWorld != null && !mc.isSingleplayer()) {
-            if (mc.thePlayer != null && mc.thePlayer.getClientBrand() != null && mc.thePlayer.getClientBrand().toLowerCase().contains("fun")) {
+            if (mc.thePlayer != null && mc.thePlayer.getClientBrand() != null && mc.thePlayer.getClientBrand().toLowerCase().contains("fakepixel")) {
                 return true;
             }
-            if (mc.getCurrentServerData().serverIP.toLowerCase().contains("fun")) {
+            if (mc.getCurrentServerData().serverIP.toLowerCase().contains("fakepixel")) {
                 return true;
             }
         }
